@@ -1,17 +1,19 @@
 
-addpath('helper_functions')
+
+
+fpath = 'm3061_Session1_PRE.mat';   % insert name of the file from raw_data folder to process
+S= load(fpath);
+
+
+
+
+
+addpath(genpath('helper_functions'))
 addpath('raw_data')
 
 velThrVxVy = [20 20];
 xStartStop = -14;
 normFlag = 1;
-
-fpath = [];
-if isempty(fpath)
-    S=load('m3061_Session1_PRE.mat');
-else
-    S= load(fpath);
-end
 
 Coords3D = S.Coords3D;
 JointCoords = S.JointCoords;
@@ -315,4 +317,81 @@ subplot(236)
 hAx=gca;
 regStats(3,:) = plotTrialKinematics(hAx, ReturnStats,  cols{3,1}(3,:), varNames, varIDa, varIDb);
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot elevation and azimuth angles and compute means
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+AzimuthMeanAngles = zeros(1,3);
+ElevationhMeanAngles = zeros(1,3);
+
+[AzimuthMeanAngles(1,1), ElevationhMeanAngles(1,1)] = computeAngles(xyzReach, 1);
+[AzimuthMeanAngles(1,2), ElevationhMeanAngles(1,2)] = computeAngles(xyzGrasp, 2);
+[AzimuthMeanAngles(1,3), ElevationhMeanAngles(1,3)] = computeAngles(xyzReturn, 3);
+
+f1=figure('Color','w', 'Name', 'Elevation angle');
+f2=figure('Color','w', 'Name', 'Azimuth angle');
+for k=1:3
+    figure(f1);
+    subplot(1,3,k)
+    hold on
+    plotArc(-90, 90, 1, gca)
+    axis equal
+    set(gca, 'XLim', [-0.1 1.1], 'YLim', [-1.1 1.1], 'Visible', 'off')
+
+    figure(f2);
+    subplot(1,3,k)
+    hold on
+    plotArc(-180, 180, 1, gca)
+    axis equal
+    set(gca, 'XLim', [-1.1 1.1], 'YLim', [-1.1 1.1],  'Visible', 'off')
+end
+
+for comp=1:3
+    figure(f1);
+    subplot(1,3,comp)
+    theta = ElevationhMeanAngles(1,comp);
+    x = [0, cosd(theta)];    % cosd, sind use degrees
+    y = [0, sind(theta)];
+    plot(x, y, 'Color', cols{comp,1}(2,:), 'LineWidth', 2);
+    
+    figure(f2);
+    subplot(1,3,comp)
+    theta = -AzimuthMeanAngles(1,comp)+90;
+    x = [0, cosd(theta)];    % cosd, sind use degrees
+    y = [0, sind(theta)];
+    plot(x, y, 'Color', cols{comp,1}(2,:), 'LineWidth', 2);
+end
+
+disp(['Reach elevation=' num2str(ElevationhMeanAngles(1,1)), '  Reach azimuth=' num2str(AzimuthMeanAngles(1,1))])
+disp(['Grasp elevation=' num2str(ElevationhMeanAngles(1,2)), '  Grasp azimuth=' num2str(AzimuthMeanAngles(1,2))])
+disp(['Return elevation=' num2str(ElevationhMeanAngles(1,3)), '  Return azimuth=' num2str(AzimuthMeanAngles(1,3))])
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sample-wise dispersion
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+X = xyzAll_common{1}';
+Y = xyzAll_common{2}';
+Z = xyzAll_common{3}';
+
+mu_X = mean(X, 2);
+mu_Y = mean(Y, 2);
+mu_Z = mean(Z, 2);
+dist  = sqrt((X - mu_X).^2 + (Y - mu_Y).^2 + (Z - mu_Z).^2);
+mean_dist = mean(dist, 2);
+
+
+Nbins = 5;
+Nsamps = size(mean_dist,1);
+
+figure('Color','w')
+plot(mean_dist, 'Color', 'k')
+
+plot(mean_dist, 'Color', 'k', 'LineWidth',2)
+set(gca, 'TickDir', 'out', 'TickLength', [0.03 0.03], 'Box', 'off', 'XTick', 0.5:Nsamps/Nbins:Nsamps+0.5, 'XTickLabel', 0:1/Nbins:1, 'XGrid', 'on', 'XLim', [0 Nsamps+1])
+xlabel('Normalized path')
+ylabel('Sample-wise dispersion')
 
