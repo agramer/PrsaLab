@@ -2,7 +2,7 @@
 % 
 % 
 % Simulate translation of a single point mass in 3D based with the OFC model
-% Based on: XXX
+% Based on: PalacioManzano_etal_CurrBiol_2026
 % 
 % Parameter optimization is based on a generalized LQG solution.
 % Based on: Todorov, E. (2005) (see kalman_lqg_xstar.m for details)
