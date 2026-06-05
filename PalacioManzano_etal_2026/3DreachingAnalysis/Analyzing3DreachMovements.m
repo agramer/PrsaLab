@@ -6,8 +6,6 @@ velThrVxVy = [20 20];
 xStartStop = -14;
 normFlag = 1;
 
-procrustFlag = 0;
-
 fpath = [];
 if isempty(fpath)
     S=load('m3061_Session1_PRE.mat');
@@ -317,11 +315,4 @@ subplot(236)
 hAx=gca;
 regStats(3,:) = plotTrialKinematics(hAx, ReturnStats,  cols{3,1}(3,:), varNames, varIDa, varIDb);
 
-
-%%%%%%%%
-% Azimuth and Elevation
-- plot and output mean values
-
-%%%%
-Path efficiency
 
