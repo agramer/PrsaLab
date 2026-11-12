@@ -1,0 +1,2 @@
+Run Figure1.m, Figure2.m, Figure3.m, Figure4.m and SuppFig1.m to reproduce the main figures of the paper and the analyses/statistics (verbose output) associated with each.
+See Readme.docx in the \DataFiles folder for the description of the deposited data.
